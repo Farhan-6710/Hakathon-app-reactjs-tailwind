@@ -11,15 +11,19 @@ const difficultyOptions = ["Easy", "Medium", "Hard"];
 
 interface AdditionalFieldsProps {
   description: string;
+  image: File | null;
   levelType: string;
   setDescription: (value: string) => void;
+  setImage: (file: File | null) => void;
   setLevelType: (value: string) => void;
 }
 
 const AdditionalFields: React.FC<AdditionalFieldsProps> = ({
   description,
+  image,
   levelType,
   setDescription,
+  setImage,
   setLevelType,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -43,7 +47,8 @@ const AdditionalFields: React.FC<AdditionalFieldsProps> = ({
       reader.onloadend = () => {
         const imageUrl = reader.result as string;
         setImagePreview(imageUrl);
-        dispatch(setImageUrl(imageUrl));
+        setImage(file); // Update local state with file object
+        dispatch(setImageUrl(imageUrl)); // Dispatch image URL to Redux store
       };
 
       reader.readAsDataURL(file); // Read file as data URL
