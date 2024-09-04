@@ -1,44 +1,52 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronDown, ArrowRight } from "lucide-react"; // Import ArrowRight icon
+import { ChevronDown, ArrowRight } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "@/src/redux/store";
+import { setImageUrl } from "@/src/redux/imageSlice";
 
-const difficultyOptions = ["Easy", "Medium", "Hard"]; // Example difficulties
+// Define example difficulty options
+const difficultyOptions = ["Easy", "Medium", "Hard"];
 
 interface AdditionalFieldsProps {
   description: string;
-  image: File | null;
   levelType: string;
   setDescription: (value: string) => void;
-  setImage: (file: File | null) => void;
   setLevelType: (value: string) => void;
 }
 
 const AdditionalFields: React.FC<AdditionalFieldsProps> = ({
   description,
-  image,
   levelType,
   setDescription,
-  setImage,
   setLevelType,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const imageUrl = useSelector((state: RootState) => state.image.imageUrl);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
-    // Create preview URL when image changes
-    if (image) {
-      const newPreview = URL.createObjectURL(image);
-      setImagePreview(newPreview);
-      return () => URL.revokeObjectURL(newPreview);
+    // Create preview URL when imageUrl changes
+    if (imageUrl) {
+      setImagePreview(imageUrl);
     } else {
       setImagePreview(null);
     }
-  }, [image]);
+  }, [imageUrl]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      setImage(file);
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        const imageUrl = reader.result as string;
+        setImagePreview(imageUrl);
+        dispatch(setImageUrl(imageUrl));
+      };
+
+      reader.readAsDataURL(file); // Read file as data URL
     }
   };
 
@@ -61,7 +69,7 @@ const AdditionalFields: React.FC<AdditionalFieldsProps> = ({
         />
       </div>
 
-      <div className={`${image ? "bg-green-50 p-6 w-fit" : ""}`}>
+      <div className={`${imagePreview ? "bg-green-50 p-6 w-fit" : ""}`}>
         <label htmlFor="image" className="block text-gray-700 mb-3 font-bold">
           Image
         </label>
@@ -89,12 +97,12 @@ const AdditionalFields: React.FC<AdditionalFieldsProps> = ({
           >
             <span
               className={`text-${
-                image ? "secondary" : "gray-700"
+                imagePreview ? "secondary" : "gray-700"
               } font-bold py-2`}
             >
-              {image ? "Change Image" : "Upload"}
+              {imagePreview ? "Change Image" : "Upload"}
             </span>
-            {image ? (
+            {imagePreview ? (
               <ArrowRight className="w-5 h-5 text-secondary" />
             ) : (
               <svg
