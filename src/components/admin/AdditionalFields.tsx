@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { ChevronDown, ArrowRight } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/src/redux/store";
@@ -80,9 +81,12 @@ const AdditionalFields: React.FC<AdditionalFieldsProps> = ({
         </label>
         {imagePreview && (
           <div className="mb-3">
-            <img
+            {/* Using next/image component with provided width and height */}
+            <Image
               src={imagePreview}
               alt="Uploaded preview"
+              width={400} // Replace with actual width if known
+              height={300} // Replace with actual height if known
               className="w-40 h-auto object-cover rounded-md"
             />
           </div>
