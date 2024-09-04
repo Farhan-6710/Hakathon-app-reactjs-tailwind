@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "imageSrc": "/images/cardimage/img1.png",
+    "title": "Data Science Bootcamp - Graded Datathon",
+    "category": "Upcoming",
+    "level": "Easy",
+    "description": "In the Data Science Bootcamp's Graded Datathon, participants are challenged to apply their data science skills to real-world problems. This competition offers a platform to showcase analytical abilities and technical expertise by solving complex datasets. Participants are expected to leverage various data science techniques, including data wrangling, statistical analysis, and machine learning algorithms, to derive actionable insights and predictive models. The goal is to address specific challenges posed in the datathon and demonstrate proficiency in handling data-driven tasks effectively."
+  },
+  {
+  "id": 2,
+  "imageSrc": "/images/cardimage/img2.png",
+  "title": "Data Sprint 72 - Butterfly Identification",
+  "category": "Upcoming",
+  "level": "Medium",
+  "description": "Butterflies are the adult flying stage of certain insects belonging to an order or group called Lepidoptera. The word 'Lepidoptera' means 'scaly wings' in Greek. This name perfectly suits the insects in this group because their wings are covered with thousands of tiny scales overlapping in rows. An agency of the Governmental Wildlife Conservation is planning to implement an automated system based on computer vision so that it can identify butterflies based on captured images. As a consultant for this project, you are responsible for developing an efficient model."
+  },
+  {
+  "id": 3,
+  "imageSrc": "/images/cardimage/img3.png",
+  "title": "Data Sprint 71 - Weather Recognition",
+  "category": "Active",
+  "level": "Hard",
+  "description": "In Data Sprint 71, the task is to develop a robust model for recognizing various weather conditions from images. This involves applying advanced image processing and machine learning techniques to accurately classify weather types such as sunny, rainy, or cloudy. The challenge includes handling diverse weather scenarios and varying image qualities to create a reliable weather recognition system."
+},
+{
+  "id": 4,
+  "imageSrc": "/images/cardimage/img4.png",
+  "title": "Data Sprint 70 - Airline Passenger Satisfaction",
+  "category": "Active",
+  "level": "Medium",
+  "description": "Data Sprint 70 focuses on analyzing passenger satisfaction within the airline industry. Participants are required to build models that predict customer satisfaction based on various features such as flight experience, service quality, and amenities. The challenge is to extract meaningful insights from customer feedback and ratings to enhance service quality and improve overall passenger satisfaction."
+},
+{
+  "id": 5,
+  "imageSrc": "/images/cardimage/img5.png",
+  "title": "Engineering Graduates Employment Outcomes",
+  "category": "Past",
+  "level": "Hard",
+  "description": "This project involves analyzing employment outcomes for engineering graduates. The objective is to create predictive models that forecast job placement success based on factors like educational background, skills, and industry trends. The challenge lies in handling complex datasets and deriving insights that can guide educational institutions and students in enhancing career prospects."
+},
+{
+  "id": 6,
+  "imageSrc": "/images/cardimage/img6.png",
+  "title": "Travel Insurance Claim Prediction",
+  "category": "Past",
+  "level": "Easy",
+  "description": "The Travel Insurance Claim Prediction challenge requires building a model to predict the likelihood of insurance claims being approved. Participants need to analyze historical claim data to identify patterns and factors influencing claim approvals. The goal is to develop a predictive model that helps insurance companies assess risk and make informed decisions about claims."
+}
+]

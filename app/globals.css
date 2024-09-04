@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* styles/globals.css or your CSS module file */
+.title-with-line::before {
+  content: '';
+  display: block;
+  width: 5px; /* Line width */
+  height: 100%; /* Full height of the element */
+  background-color: theme('colors.tertiary');
+  position: absolute;
+  left: -10px; /* Adjust based on spacing needs */
+  top: 0;
+  bottom: 0;
+}
+
+
+.title-container {
+  position: relative; /* Required for absolute positioning of pseudo-element */
+  padding-left: 15px; /* Space for the line */
+}
+
+/* styles/globals.css */
+.hero-image {
+  transform: rotate(20deg); /* Adjust the degree as needed */
+  transition: transform 0.3s ease; /* Optional: Smooth transition for rotation */
+}
+
+/* Default header styles */
+header {
+  position: relative; /* Ensure header is positioned relative to its normal flow */
+  background-color: white; /* Background color of the header */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  width: 100%;
+  z-index: 30; /* Ensure it is above other content */
+}
+
+/* Sticky header styles start */
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  transition: 0.3s all;
+  animation: slideDown 0.4s ease;
+}
+
+.header-placeholder {
+  height: 70px; /* Adjust based on your header's height */
+  transition: height 0.3s ease;
+}
+
+/* Animation for sliding down */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Sticky header styles end */
+
+.product-details {
+  min-height: 420px;
+}
+
+/* globals.css */
+
+/* Remove default focus styles */
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Apply custom focus styles */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: theme('colors.tertiary'); /* Replace with your tertiary color */
+}
+
+
+@media(max-width:768px) {
+    .title-with-line::before {
+        display: none;
+    }
+    .title-container {
+        padding-left: 0;
+    }
+}
