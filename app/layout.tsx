@@ -5,8 +5,8 @@ import ClientLayout from "./ClientLayout"; // Import the client component
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Your Custom Title",
-  description: "Hakathon Organiser App UI",
+  title: "Hackathon Organiser App",
+  description: "A simple UI for Hackathon Organiser App",
   icons: {
     icon: "/images/favicon.ico", // Path to your favicon
   },
