@@ -69,7 +69,7 @@ const ProductDetailClient: React.FC<{ product: Card }> = ({ product }) => {
           </h1>
           {/* Third Element */}
           <p className="text-white mb-4">
-            Participate in the competition to rank in India's best Coders
+            Participate in the competition to rank in India&apos;s best Coders
             ranking
           </p>
           {/* Fourth Element */}
