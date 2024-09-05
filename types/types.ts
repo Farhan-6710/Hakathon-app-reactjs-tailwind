@@ -1,11 +1,11 @@
 // types.ts
-
-// Assuming you have a Card type already defined somewhere
 export interface Card {
-  id: string;
+  id: number;
+  imageSrc: string;
   title: string;
   category: string;
   level: string;
+  description: string;
 }
 
 // Interface for FilterButton component props
@@ -15,6 +15,7 @@ export interface FilterButtonProps {
   onFilterChange: (filters: { categories: string[]; levels: string[] }) => void;
   onShowAll: () => void;
   showAllChecked: boolean;
+  filters: { categories: string[]; levels: string[] }; // Add this line
 }
 
 // Interface for ExploreChallenges component props
@@ -24,6 +25,7 @@ export interface ExploreChallengesProps {
   onShowAll: () => void;
   onFilterChange: (filters: { categories: string[]; levels: string[] }) => void;
   showAllChecked: boolean;
+  filters: { categories: string[]; levels: string[] }; // Add this line
 }
 
 // Interface for CardsSection component props, if needed

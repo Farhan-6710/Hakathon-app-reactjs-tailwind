@@ -1,4 +1,4 @@
-import { Filter, X } from "lucide-react";
+import { Filter } from "lucide-react";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FilterButtonProps } from "@/types/types";
 
@@ -16,34 +16,63 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategories((prevCategories) => {
-      const isSelected = prevCategories.includes(category);
-      const newCategories = isSelected
-        ? prevCategories.filter((cat) => cat !== category)
-        : [...prevCategories, category];
-      return newCategories;
-    });
-  };
-
-  const handleLevelChange = (level: string) => {
-    setSelectedLevels((prevLevels) => {
-      const isSelected = prevLevels.includes(level);
-      const newLevels = isSelected
-        ? prevLevels.filter((lvl) => lvl !== level)
-        : [...prevLevels, level];
-      return newLevels;
-    });
-  };
-
-  const handleShowAll = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
+  // Sync local state with props
+  useEffect(() => {
+    if (showAllChecked) {
       setSelectedCategories([]);
       setSelectedLevels([]);
-      onFilterChange({ categories: [], levels: [] });
     }
-    onShowAll();
-  };
+  }, [showAllChecked]);
+
+  useEffect(() => {
+    // Only update selected categories and levels if not in "Show All" mode
+    if (!showAllChecked) {
+      setSelectedCategories((prev) =>
+        prev.filter((cat) => categories.includes(cat))
+      );
+      setSelectedLevels((prev) => prev.filter((lvl) => levels.includes(lvl)));
+    }
+  }, [categories, levels, showAllChecked]);
+
+  const handleCategoryChange = useCallback(
+    (category: string) => {
+      setSelectedCategories((prevCategories) => {
+        const isSelected = prevCategories.includes(category);
+        const newCategories = isSelected
+          ? prevCategories.filter((cat) => cat !== category)
+          : [...prevCategories, category];
+        onFilterChange({ categories: newCategories, levels: selectedLevels });
+        return newCategories;
+      });
+    },
+    [selectedLevels, onFilterChange]
+  );
+
+  const handleLevelChange = useCallback(
+    (level: string) => {
+      setSelectedLevels((prevLevels) => {
+        const isSelected = prevLevels.includes(level);
+        const newLevels = isSelected
+          ? prevLevels.filter((lvl) => lvl !== level)
+          : [...prevLevels, level];
+        onFilterChange({ categories: selectedCategories, levels: newLevels });
+        return newLevels;
+      });
+    },
+    [selectedCategories, onFilterChange]
+  );
+
+  const handleShowAllChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.checked) {
+        setSelectedCategories([]);
+        setSelectedLevels([]);
+        onFilterChange({ categories: [], levels: [] }); // Reset filters
+      }
+      onShowAll(); // Call the function to show all items
+    },
+    [onFilterChange, onShowAll]
+  );
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
     if (
@@ -55,10 +84,10 @@ const FilterButton: React.FC<FilterButtonProps> = ({
     }
   }, []);
 
-  useEffect(() => {
-    // Update parent component only when selectedCategories or selectedLevels change
-    onFilterChange({ categories: selectedCategories, levels: selectedLevels });
-  }, [selectedCategories, selectedLevels, onFilterChange]);
+  const handleButtonClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setIsOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -68,15 +97,16 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   }, [handleClickOutside]);
 
   return (
-    <div className="relative flex items-center justify-end">
+    <div className="relative">
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center justify-end w-fit bg-white text-gray-700 py-2 px-4 rounded-xl shadow-md hover:bg-gray-100 h-12"
+        onClick={handleButtonClick}
+        className="flex items-center w-fit bg-white text-gray-700 py-2 px-4 rounded-xl shadow-md hover:bg-gray-100 h-12"
       >
         <Filter className="mr-2 w-5 h-5 md:w-6 md:h-6 text-primary" />
         <span className="font-semibold">Filter</span>
       </button>
 
+      {/* Overlay */}
       {isOpen && (
         <div
           ref={overlayRef}
@@ -85,6 +115,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
         />
       )}
 
+      {/* Dropdown */}
       {isOpen && (
         <div
           ref={dropdownRef}
@@ -96,7 +127,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
                 type="checkbox"
                 id="show-all"
                 checked={showAllChecked}
-                onChange={handleShowAll}
+                onChange={handleShowAllChange}
                 className="mr-2"
               />
               <span className="font-semibold">Show All</span>

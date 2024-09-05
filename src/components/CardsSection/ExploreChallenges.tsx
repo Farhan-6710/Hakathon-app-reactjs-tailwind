@@ -9,18 +9,11 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
   onShowAll,
   onFilterChange,
   showAllChecked,
+  filters,
 }) => {
   const [query, setQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState<Card[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [filters, setFilters] = useState<{
-    categories: string[];
-    levels: string[];
-  }>({
-    categories: [],
-    levels: [],
-  });
-  const [showAll, setShowAll] = useState(showAllChecked);
 
   useEffect(() => {
     let results = cards;
@@ -48,10 +41,6 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
     setIsDropdownOpen(query.length > 0);
   }, [query]);
 
-  useEffect(() => {
-    setShowAll(filters.categories.length === 0 && filters.levels.length === 0);
-  }, [filters]);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
@@ -61,28 +50,14 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
     setQuery("");
     setFilteredCards([]);
     setIsDropdownOpen(false);
-    setShowAll(false);
-  };
-
-  const handleFilterChange = (newFilters: {
-    categories: string[];
-    levels: string[];
-  }) => {
-    setFilters(newFilters);
-    onFilterChange(newFilters);
   };
 
   const handleShowAll = () => {
     onShowAll();
     setQuery("");
-    setFilters({ categories: [], levels: [] });
     setFilteredCards([]);
     setIsDropdownOpen(false);
-    setShowAll(true);
   };
-
-  const categories = Array.from(new Set(cards.map((card) => card.category)));
-  const levels = Array.from(new Set(cards.map((card) => card.level)));
 
   return (
     <div className="bg-primaryDark py-10 md:py-12">
@@ -90,8 +65,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
         <div className="text-white text-4xl font-bold text-center mb-14">
           <h1>Explore Challenges</h1>
         </div>
-        <div className="flex flex-col md:flex-row justify-end sm:justify-center sm:gap-4">
-          {/* Search Bar */}
+        <div className="flex flex-col sm:flex-row justify-end sm:justify-center sm:gap-4">
           <div className="relative flex flex-row items-center bg-white rounded-xl shadow-md w-full md:w-1/2 lg:w-1/2 mb-4 md:mb-0 h-12">
             <div className="flex items-center w-auto pl-4 py-2">
               <Search className="text-gray-400 w-5 h-5 md:w-6 md:h-6" />
@@ -115,37 +89,31 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
                 >
                   Show All Hackathons
                 </li>
-                {filteredCards.length > 0 && (
-                  <>
-                    {filteredCards.map((card) => (
-                      <li
-                        key={card.id}
-                        onClick={() => handleCardSelect(card)}
-                        className="p-2 cursor-pointer hover:bg-gray-100"
-                      >
-                        {card.title}
-                      </li>
-                    ))}
-                  </>
-                )}
-                {filteredCards.length === 0 && query.length > 0 && (
+                {filteredCards.length > 0 ? (
+                  filteredCards.map((card) => (
+                    <li
+                      key={card.id}
+                      onClick={() => handleCardSelect(card)}
+                      className="p-2 cursor-pointer hover:bg-gray-100"
+                    >
+                      {card.title}
+                    </li>
+                  ))
+                ) : (
                   <li className="p-2 text-gray-500">No results found</li>
                 )}
               </ul>
             )}
           </div>
-
-          {/* Filter Button */}
           <FilterButton
-            categories={categories}
-            levels={levels}
-            onFilterChange={handleFilterChange}
+            categories={Array.from(new Set(cards.map((card) => card.category)))}
+            levels={Array.from(new Set(cards.map((card) => card.level)))}
+            onFilterChange={onFilterChange}
             onShowAll={handleShowAll}
-            showAllChecked={showAll}
+            showAllChecked={showAllChecked}
+            filters={filters} // Pass filters state
           />
         </div>
-
-        {/* Filter List */}
         <div className="mt-4 flex flex-wrap gap-2">
           {filters.categories.map((category) => (
             <div
@@ -156,12 +124,12 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
               <X
                 className="w-4 h-4 cursor-pointer"
                 onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    categories: prev.categories.filter(
+                  onFilterChange({
+                    ...filters,
+                    categories: filters.categories.filter(
                       (cat) => cat !== category
                     ),
-                  }))
+                  })
                 }
               />
             </div>
@@ -175,10 +143,10 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
               <X
                 className="w-4 h-4 cursor-pointer"
                 onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    levels: prev.levels.filter((lvl) => lvl !== level),
-                  }))
+                  onFilterChange({
+                    ...filters,
+                    levels: filters.levels.filter((lvl) => lvl !== level),
+                  })
                 }
               />
             </div>

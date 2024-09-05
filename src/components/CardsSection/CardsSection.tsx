@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import CardList from "./CardList";
 import ExploreChallenges from "@/src/components/CardsSection/ExploreChallenges";
@@ -39,7 +39,8 @@ const CardsSection: React.FC = () => {
 
   const handleShowAll = () => {
     setSelectedCard(null);
-    setShowAllChecked(true); // Set to true when Show All is selected
+    setFilters({ categories: [], levels: [] });
+    setShowAllChecked(true);
   };
 
   const handleFilterChange = (newFilters: {
@@ -71,7 +72,8 @@ const CardsSection: React.FC = () => {
         onCardSelect={(card) => setSelectedCard(card)}
         onShowAll={handleShowAll}
         onFilterChange={handleFilterChange}
-        showAllChecked={showAllChecked} // Pass state down
+        showAllChecked={showAllChecked}
+        filters={filters} // Pass filters state
       />
       <section className="bg-primary py-10 md:py-12">
         <div className="container px-5 py-8 mx-auto">
