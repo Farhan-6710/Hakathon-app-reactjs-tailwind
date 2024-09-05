@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search, X } from "lucide-react";
 import FilterButton from "./FilterButton";
 import { Card, ExploreChallengesProps } from "@/types/types";
@@ -14,49 +14,82 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
   const [query, setQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState<Card[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [localShowAllChecked, setLocalShowAllChecked] =
+    useState(showAllChecked);
 
+  const showAllClickedRef = useRef(false); // Ref to track if "Show All" was clicked
+
+  // Update filtered cards based on query and filters
   useEffect(() => {
+    console.log("Filters or query changed");
     let results = cards;
 
     if (query.length > 0) {
       results = results.filter((card) =>
         card.title.toLowerCase().includes(query.toLowerCase())
       );
+      console.log("Query filter applied:", query);
     }
 
     if (filters.categories.length > 0) {
       results = results.filter((card) =>
         filters.categories.includes(card.category)
       );
+      console.log("Category filter applied:", filters.categories);
     }
 
     if (filters.levels.length > 0) {
       results = results.filter((card) => filters.levels.includes(card.level));
+      console.log("Level filter applied:", filters.levels);
     }
 
     setFilteredCards(results);
   }, [query, cards, filters]);
 
+  // Sync localShowAllChecked with showAllChecked only if "Show All" was clicked
   useEffect(() => {
+    if (showAllClickedRef.current) {
+      console.log("Show All Checked state updated:", showAllChecked);
+      setLocalShowAllChecked(showAllChecked);
+      showAllClickedRef.current = false; // Reset the flag after updating
+    }
+  }, [showAllChecked]);
+
+  // Toggle dropdown visibility based on query length
+  useEffect(() => {
+    console.log("Query length changed:", query.length);
     setIsDropdownOpen(query.length > 0);
   }, [query]);
 
+  // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Search input changed:", e.target.value);
     setQuery(e.target.value);
   };
 
+  // Handle card selection
   const handleCardSelect = (card: Card) => {
+    console.log("Card selected:", card);
     onCardSelect(card);
     setQuery("");
     setFilteredCards([]);
-    setIsDropdownOpen(false);
+    setLocalShowAllChecked(false); // Uncheck "Show All" when an item is selected
+    onFilterChange({
+      ...filters,
+      categories: [], // Clear categories filter
+      levels: [], // Clear levels filter
+    });
   };
 
+  // Handle "Show All" action
   const handleShowAll = () => {
+    console.log("Show All clicked");
     onShowAll();
     setQuery("");
     setFilteredCards([]);
     setIsDropdownOpen(false);
+    setLocalShowAllChecked(true); // Set "Show All" to checked
+    showAllClickedRef.current = true; // Set the flag to true when "Show All" is clicked
   };
 
   return (
@@ -110,7 +143,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
             levels={Array.from(new Set(cards.map((card) => card.level)))}
             onFilterChange={onFilterChange}
             onShowAll={handleShowAll}
-            showAllChecked={showAllChecked}
+            showAllChecked={localShowAllChecked} // Pass local state here
             filters={filters} // Pass filters state
           />
         </div>
@@ -125,14 +158,15 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
                 <span className="mr-2">{category}</span>
                 <X
                   className="w-5 h-5 cursor-pointer bg-white text-gray-400 rounded-full p-1"
-                  onClick={() =>
+                  onClick={() => {
+                    console.log("Category removed:", category);
                     onFilterChange({
                       ...filters,
                       categories: filters.categories.filter(
                         (cat) => cat !== category
                       ),
-                    })
-                  }
+                    });
+                  }}
                 />
               </div>
             ))}
@@ -144,12 +178,13 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
                 <span className="mr-2">{level}</span>
                 <X
                   className="w-5 h-5 cursor-pointer bg-white text-gray-400 rounded-full p-1"
-                  onClick={() =>
+                  onClick={() => {
+                    console.log("Level removed:", level);
                     onFilterChange({
                       ...filters,
                       levels: filters.levels.filter((lvl) => lvl !== level),
-                    })
-                  }
+                    });
+                  }}
                 />
               </div>
             ))}
