@@ -8,7 +8,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   onFilterChange,
   onShowAll,
   showAllChecked,
-  filters, // Added filters prop
+  filters,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -19,6 +19,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
+  // Sync localShowAllChecked with showAllChecked prop
   useEffect(() => {
     if (showAllChecked) {
       setSelectedCategories([]);
@@ -29,7 +30,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
     }
   }, [showAllChecked]);
 
-  // Sync local state with filters prop
+  // Sync local state with filters prop when showAllChecked changes
   useEffect(() => {
     if (!localShowAllChecked) {
       setSelectedCategories(filters.categories);
@@ -49,7 +50,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({
           setLocalShowAllChecked(false);
         }
 
-        onFilterChange({ categories: newCategories, levels: selectedLevels });
+        // Avoid causing updates during rendering
+        setTimeout(() => {
+          onFilterChange({ categories: newCategories, levels: selectedLevels });
+        }, 0);
+
         return newCategories;
       });
     },
@@ -68,7 +73,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({
           setLocalShowAllChecked(false);
         }
 
-        onFilterChange({ categories: selectedCategories, levels: newLevels });
+        // Avoid causing updates during rendering
+        setTimeout(() => {
+          onFilterChange({ categories: selectedCategories, levels: newLevels });
+        }, 0);
+
         return newLevels;
       });
     },
@@ -80,18 +89,20 @@ const FilterButton: React.FC<FilterButtonProps> = ({
       const isChecked = event.target.checked;
       setLocalShowAllChecked(isChecked);
 
-      if (isChecked) {
-        setSelectedCategories([]);
-        setSelectedLevels([]);
-        onFilterChange({ categories: [], levels: [] });
-      } else {
-        onFilterChange({
-          categories: selectedCategories,
-          levels: selectedLevels,
-        });
-      }
-
-      onShowAll();
+      // Use a timeout to avoid updates during rendering
+      setTimeout(() => {
+        if (isChecked) {
+          setSelectedCategories([]);
+          setSelectedLevels([]);
+          onFilterChange({ categories: [], levels: [] });
+        } else {
+          onFilterChange({
+            categories: selectedCategories,
+            levels: selectedLevels,
+          });
+        }
+        onShowAll(); // Call the function to show all items
+      }, 0);
     },
     [selectedCategories, selectedLevels, onFilterChange, onShowAll]
   );
