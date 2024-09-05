@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import FilterButton from "./FilterButton";
-import { Card } from "@/types/types";
+import { Card, ExploreChallengesProps } from "@/types/types";
 
-const ExploreChallenges: React.FC<{
-  cards: Card[];
-  onCardSelect: (card: Card) => void;
-  onShowAll: () => void;
-  onFilterChange: (filters: { category: string; level: string }) => void;
-}> = ({ cards, onCardSelect, onShowAll, onFilterChange }) => {
+const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
+  cards,
+  onCardSelect,
+  onShowAll,
+  onFilterChange,
+  showAllChecked, // Correctly use showAllChecked
+}) => {
   const [query, setQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState<Card[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [filters, setFilters] = useState<{ category: string; level: string }>({
-    category: "",
-    level: "",
+  const [filters, setFilters] = useState<{
+    categories: string[];
+    levels: string[];
+  }>({
+    categories: [],
+    levels: [],
   });
+  const [showAll, setShowAll] = useState(showAllChecked); // Initialize with showAllChecked
 
   useEffect(() => {
     let results = cards;
@@ -26,21 +31,27 @@ const ExploreChallenges: React.FC<{
       );
     }
 
-    if (filters.category) {
-      results = results.filter((card) => card.category === filters.category);
+    if (filters.categories.length > 0) {
+      results = results.filter((card) =>
+        filters.categories.includes(card.category)
+      );
     }
 
-    if (filters.level) {
-      results = results.filter((card) => card.level === filters.level);
+    if (filters.levels.length > 0) {
+      results = results.filter((card) => filters.levels.includes(card.level));
     }
 
     setFilteredCards(results);
   }, [query, cards, filters]);
 
   useEffect(() => {
-    // Open dropdown only if there's a query
     setIsDropdownOpen(query.length > 0);
   }, [query]);
+
+  useEffect(() => {
+    // Update the Show All state based on filters
+    setShowAll(filters.categories.length === 0 && filters.levels.length === 0);
+  }, [filters]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -51,25 +62,29 @@ const ExploreChallenges: React.FC<{
     setQuery("");
     setFilteredCards([]);
     setIsDropdownOpen(false);
+    setShowAll(false); // Uncheck Show All when a card is selected
   };
 
   const handleFilterChange = (newFilters: {
-    category: string;
-    level: string;
+    categories: string[];
+    levels: string[];
   }) => {
     setFilters(newFilters);
-    onFilterChange(newFilters); // Pass the filters up to parent
+    onFilterChange(newFilters);
+    setShowAll(
+      newFilters.categories.length === 0 && newFilters.levels.length === 0
+    );
   };
 
   const handleShowAll = () => {
     onShowAll();
     setQuery("");
-    setFilters({ category: "", level: "" });
+    setFilters({ categories: [], levels: [] });
     setFilteredCards([]);
     setIsDropdownOpen(false);
+    setShowAll(true); // Check Show All when all items are shown
   };
 
-  // Extract unique categories and levels from cards
   const categories = Array.from(new Set(cards.map((card) => card.category)));
   const levels = Array.from(new Set(cards.map((card) => card.level)));
 
@@ -102,7 +117,7 @@ const ExploreChallenges: React.FC<{
                     filteredCards.length > 0 ? "text-primary" : "text-gray-500"
                   }`}
                 >
-                  Show All
+                  Show All Hackathons
                 </li>
                 {filteredCards.length > 0 && (
                   <>
@@ -129,6 +144,8 @@ const ExploreChallenges: React.FC<{
             categories={categories}
             levels={levels}
             onFilterChange={handleFilterChange}
+            onShowAll={handleShowAll}
+            showAllChecked={showAll} // Pass showAll state to FilterButton
           />
         </div>
       </div>

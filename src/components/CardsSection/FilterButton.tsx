@@ -1,34 +1,51 @@
 import { Filter } from "lucide-react";
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { FilterButtonProps } from "@/types/types";
 
-interface FilterButtonProps {
-  categories: string[];
-  levels: string[];
-  onFilterChange: (filters: { category: string; level: string }) => void;
-}
 
 const FilterButton: React.FC<FilterButtonProps> = ({
   categories,
   levels,
   onFilterChange,
+  onShowAll,
+  showAllChecked,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [selectedLevel, setSelectedLevel] = useState<string>("");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
   const handleCategoryChange = (category: string) => {
-    const newCategory = selectedCategory === category ? "" : category;
-    setSelectedCategory(newCategory);
-    onFilterChange({ category: newCategory, level: selectedLevel });
+    setSelectedCategories((prevCategories) => {
+      const isSelected = prevCategories.includes(category);
+      const newCategories = isSelected
+        ? prevCategories.filter((cat) => cat !== category)
+        : [...prevCategories, category];
+      onFilterChange({ categories: newCategories, levels: selectedLevels });
+      return newCategories;
+    });
   };
 
   const handleLevelChange = (level: string) => {
-    const newLevel = selectedLevel === level ? "" : level;
-    setSelectedLevel(newLevel);
-    onFilterChange({ category: selectedCategory, level: newLevel });
+    setSelectedLevels((prevLevels) => {
+      const isSelected = prevLevels.includes(level);
+      const newLevels = isSelected
+        ? prevLevels.filter((lvl) => lvl !== level)
+        : [...prevLevels, level];
+      onFilterChange({ categories: selectedCategories, levels: newLevels });
+      return newLevels;
+    });
+  };
+
+  const handleShowAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      setSelectedCategories([]);
+      setSelectedLevels([]);
+      onFilterChange({ categories: [], levels: [] }); // Reset filters
+    }
+    onShowAll(); // Call the function to show all items
   };
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -42,9 +59,8 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   }, []);
 
   const handleButtonClick = (event: React.MouseEvent) => {
-    // Prevent event from bubbling up to avoid closing the dropdown
     event.stopPropagation();
-    setIsOpen(prev => !prev);
+    setIsOpen((prev) => !prev);
   };
 
   useEffect(() => {
@@ -77,18 +93,31 @@ const FilterButton: React.FC<FilterButtonProps> = ({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-20 top-12 w-40 bg-white border border-gray-300 rounded-lg shadow-lg mt-2"
+          className="absolute z-20 top-12 w-60 bg-white border border-gray-300 rounded-lg shadow-lg mt-2"
         >
           <div className="p-4">
+            <label htmlFor="show-all" className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                id="show-all"
+                checked={showAllChecked}
+                onChange={handleShowAll}
+                className="mr-2"
+              />
+              <span className="font-semibold">Show All</span>
+            </label>
             <h3 className="text-lg font-semibold mb-2">Category</h3>
             <ul className="space-y-2">
               {categories.map((category, index) => (
                 <li key={category}>
-                  <label htmlFor={`category-${index}`} className="flex items-center">
+                  <label
+                    htmlFor={`category-${index}`}
+                    className="flex items-center"
+                  >
                     <input
                       type="checkbox"
                       id={`category-${index}`}
-                      checked={selectedCategory === category}
+                      checked={selectedCategories.includes(category)}
                       onChange={() => handleCategoryChange(category)}
                       className="mr-2"
                     />
@@ -103,11 +132,14 @@ const FilterButton: React.FC<FilterButtonProps> = ({
             <ul className="space-y-2">
               {levels.map((level, index) => (
                 <li key={level}>
-                  <label htmlFor={`level-${index}`} className="flex items-center">
+                  <label
+                    htmlFor={`level-${index}`}
+                    className="flex items-center"
+                  >
                     <input
                       type="checkbox"
                       id={`level-${index}`}
-                      checked={selectedLevel === level}
+                      checked={selectedLevels.includes(level)}
                       onChange={() => handleLevelChange(level)}
                       className="mr-2"
                     />

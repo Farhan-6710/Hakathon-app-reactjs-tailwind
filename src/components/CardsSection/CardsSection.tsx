@@ -1,7 +1,7 @@
-"use client";
+"use client"
 import React, { useState, useEffect } from "react";
 import CardList from "./CardList";
-import ExploreChallenges from "@/src/components/ExploreChallenges";
+import ExploreChallenges from "@/src/components/CardsSection/ExploreChallenges";
 import { Card } from "@/types/types";
 
 const CardsSection: React.FC = () => {
@@ -9,10 +9,14 @@ const CardsSection: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-  const [filters, setFilters] = useState<{ category: string; level: string }>({
-    category: "",
-    level: "",
+  const [filters, setFilters] = useState<{
+    categories: string[];
+    levels: string[];
+  }>({
+    categories: [],
+    levels: [],
   });
+  const [showAllChecked, setShowAllChecked] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,20 +38,26 @@ const CardsSection: React.FC = () => {
   }, []);
 
   const handleShowAll = () => {
-    setSelectedCard(null); // Reset the selected card
+    setSelectedCard(null);
+    setShowAllChecked(true); // Set to true when Show All is selected
   };
 
   const handleFilterChange = (newFilters: {
-    category: string;
-    level: string;
+    categories: string[];
+    levels: string[];
   }) => {
     setFilters(newFilters);
+    setShowAllChecked(
+      newFilters.categories.length === 0 && newFilters.levels.length === 0
+    );
   };
 
   const filteredCards = cards.filter((card) => {
     const matchesCategory =
-      !filters.category || card.category === filters.category;
-    const matchesLevel = !filters.level || card.level === filters.level;
+      filters.categories.length === 0 ||
+      filters.categories.includes(card.category);
+    const matchesLevel =
+      filters.levels.length === 0 || filters.levels.includes(card.level);
     return matchesCategory && matchesLevel;
   });
 
@@ -61,13 +71,14 @@ const CardsSection: React.FC = () => {
         onCardSelect={(card) => setSelectedCard(card)}
         onShowAll={handleShowAll}
         onFilterChange={handleFilterChange}
+        showAllChecked={showAllChecked} // Pass state down
       />
       <section className="bg-primary py-10 md:py-12">
         <div className="container px-5 py-8 mx-auto">
           {filteredCards.length === 0 ? (
             <p className="text-center text-4xl text-white min-h-56 leading-snug md:leading-loose">
               No Hackathons found <br /> Kindly Check For{" "}
-              <span className="text-secondary">Upcoming Hakathons</span>{" "}
+              <span className="text-secondary">Upcoming Hackathons</span>{" "}
             </p>
           ) : (
             <CardList cards={selectedCard ? [selectedCard] : filteredCards} />
