@@ -17,4 +17,6 @@ const FilterOverlay = forwardRef<HTMLDivElement, FilterOverlayProps>(
   }
 );
 
+FilterOverlay.displayName = 'FilterOverlay'; // Add this line
+
 export default FilterOverlay;

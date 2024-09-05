@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 const difficultyOptions = ["Easy", "Medium", "Hard"]; // Example difficulties
 
@@ -60,10 +61,12 @@ const EditAdditionalFields: React.FC<EditAdditionalFieldsProps> = ({
         <div className="bg-green-50 p-6">
           {imageSrcPreview && (
             <div className="mb-3 w-full">
-              <img
+              <Image
                 src={imageSrcPreview}
                 alt="ImageSrc preview"
                 className="w-full h-auto object-cover rounded-b-2xl"
+                width={500} // Provide appropriate width
+                height={300} // Provide appropriate height
               />
             </div>
           )}

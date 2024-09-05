@@ -95,4 +95,6 @@ const FilterDropdown = forwardRef<HTMLDivElement, FilterDropdownProps>(
   }
 );
 
+FilterDropdown.displayName = 'FilterDropdown'; // Add this line
+
 export default FilterDropdown;
