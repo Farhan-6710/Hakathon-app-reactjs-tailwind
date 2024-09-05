@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Search, X } from "lucide-react";
-import FilterButton from "./FilterButton";
+import FilterButton from "./filter/FilterButton";
 import { Card, ExploreChallengesProps } from "@/types/types";
 
 const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
