@@ -1,6 +1,5 @@
-"use client"
-import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Filter } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FilterButtonProps } from "@/types/types";
 
 const FilterButton: React.FC<FilterButtonProps> = ({
@@ -9,25 +8,34 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   onFilterChange,
   onShowAll,
   showAllChecked,
-  filters,
+  filters, // Added filters prop
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
+  const [localShowAllChecked, setLocalShowAllChecked] =
+    useState<boolean>(showAllChecked);
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
-  // Sync local state with props
   useEffect(() => {
     if (showAllChecked) {
       setSelectedCategories([]);
       setSelectedLevels([]);
+      setLocalShowAllChecked(true);
     } else {
+      setLocalShowAllChecked(false);
+    }
+  }, [showAllChecked]);
+
+  // Sync local state with filters prop
+  useEffect(() => {
+    if (!localShowAllChecked) {
       setSelectedCategories(filters.categories);
       setSelectedLevels(filters.levels);
     }
-  }, [filters.categories, filters.levels, showAllChecked]);
+  }, [filters, localShowAllChecked]);
 
   const handleCategoryChange = useCallback(
     (category: string) => {
@@ -36,6 +44,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({
         const newCategories = isSelected
           ? prevCategories.filter((cat) => cat !== category)
           : [...prevCategories, category];
+
+        if (newCategories.length > 0) {
+          setLocalShowAllChecked(false);
+        }
+
         onFilterChange({ categories: newCategories, levels: selectedLevels });
         return newCategories;
       });
@@ -50,6 +63,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({
         const newLevels = isSelected
           ? prevLevels.filter((lvl) => lvl !== level)
           : [...prevLevels, level];
+
+        if (newLevels.length > 0) {
+          setLocalShowAllChecked(false);
+        }
+
         onFilterChange({ categories: selectedCategories, levels: newLevels });
         return newLevels;
       });
@@ -59,14 +77,23 @@ const FilterButton: React.FC<FilterButtonProps> = ({
 
   const handleShowAllChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.checked) {
+      const isChecked = event.target.checked;
+      setLocalShowAllChecked(isChecked);
+
+      if (isChecked) {
         setSelectedCategories([]);
         setSelectedLevels([]);
-        onFilterChange({ categories: [], levels: [] }); // Reset filters
+        onFilterChange({ categories: [], levels: [] });
+      } else {
+        onFilterChange({
+          categories: selectedCategories,
+          levels: selectedLevels,
+        });
       }
-      onShowAll(); // Call the function to show all items
+
+      onShowAll();
     },
-    [onFilterChange, onShowAll]
+    [selectedCategories, selectedLevels, onFilterChange, onShowAll]
   );
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -121,7 +148,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
               <input
                 type="checkbox"
                 id="show-all"
-                checked={showAllChecked}
+                checked={localShowAllChecked}
                 onChange={handleShowAllChange}
                 className="mr-2"
               />
@@ -138,7 +165,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({
                     <input
                       type="checkbox"
                       id={`category-${index}`}
-                      checked={selectedCategories.includes(category)}
+                      checked={
+                        localShowAllChecked
+                          ? false
+                          : selectedCategories.includes(category)
+                      }
                       onChange={() => handleCategoryChange(category)}
                       className="mr-2"
                     />
@@ -160,7 +191,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({
                     <input
                       type="checkbox"
                       id={`level-${index}`}
-                      checked={selectedLevels.includes(level)}
+                      checked={
+                        localShowAllChecked
+                          ? false
+                          : selectedLevels.includes(level)
+                      }
                       onChange={() => handleLevelChange(level)}
                       className="mr-2"
                     />

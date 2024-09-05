@@ -21,26 +21,22 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
 
   // Update filtered cards based on query and filters
   useEffect(() => {
-    console.log("Filters or query changed");
     let results = cards;
 
     if (query.length > 0) {
       results = results.filter((card) =>
         card.title.toLowerCase().includes(query.toLowerCase())
       );
-      console.log("Query filter applied:", query);
     }
 
     if (filters.categories.length > 0) {
       results = results.filter((card) =>
         filters.categories.includes(card.category)
       );
-      console.log("Category filter applied:", filters.categories);
     }
 
     if (filters.levels.length > 0) {
       results = results.filter((card) => filters.levels.includes(card.level));
-      console.log("Level filter applied:", filters.levels);
     }
 
     setFilteredCards(results);
@@ -49,7 +45,6 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
   // Sync localShowAllChecked with showAllChecked only if "Show All" was clicked
   useEffect(() => {
     if (showAllClickedRef.current) {
-      console.log("Show All Checked state updated:", showAllChecked);
       setLocalShowAllChecked(showAllChecked);
       showAllClickedRef.current = false; // Reset the flag after updating
     }
@@ -57,19 +52,16 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
 
   // Toggle dropdown visibility based on query length
   useEffect(() => {
-    console.log("Query length changed:", query.length);
     setIsDropdownOpen(query.length > 0);
   }, [query]);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Search input changed:", e.target.value);
     setQuery(e.target.value);
   };
 
   // Handle card selection
   const handleCardSelect = (card: Card) => {
-    console.log("Card selected:", card);
     onCardSelect(card);
     setQuery("");
     setFilteredCards([]);
@@ -83,7 +75,6 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
 
   // Handle "Show All" action
   const handleShowAll = () => {
-    console.log("Show All clicked");
     onShowAll();
     setQuery("");
     setFilteredCards([]);
@@ -159,7 +150,6 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
                 <X
                   className="w-5 h-5 cursor-pointer bg-white text-gray-400 rounded-full p-1"
                   onClick={() => {
-                    console.log("Category removed:", category);
                     onFilterChange({
                       ...filters,
                       categories: filters.categories.filter(
@@ -179,7 +169,6 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
                 <X
                   className="w-5 h-5 cursor-pointer bg-white text-gray-400 rounded-full p-1"
                   onClick={() => {
-                    console.log("Level removed:", level);
                     onFilterChange({
                       ...filters,
                       levels: filters.levels.filter((lvl) => lvl !== level),
