@@ -1,5 +1,6 @@
+"use client"
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Filter } from "lucide-react";
-import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FilterButtonProps } from "@/types/types";
 
 const FilterButton: React.FC<FilterButtonProps> = ({
@@ -8,6 +9,7 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   onFilterChange,
   onShowAll,
   showAllChecked,
+  filters,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -21,18 +23,11 @@ const FilterButton: React.FC<FilterButtonProps> = ({
     if (showAllChecked) {
       setSelectedCategories([]);
       setSelectedLevels([]);
+    } else {
+      setSelectedCategories(filters.categories);
+      setSelectedLevels(filters.levels);
     }
-  }, [showAllChecked]);
-
-  useEffect(() => {
-    // Only update selected categories and levels if not in "Show All" mode
-    if (!showAllChecked) {
-      setSelectedCategories((prev) =>
-        prev.filter((cat) => categories.includes(cat))
-      );
-      setSelectedLevels((prev) => prev.filter((lvl) => levels.includes(lvl)));
-    }
-  }, [categories, levels, showAllChecked]);
+  }, [filters.categories, filters.levels, showAllChecked]);
 
   const handleCategoryChange = useCallback(
     (category: string) => {

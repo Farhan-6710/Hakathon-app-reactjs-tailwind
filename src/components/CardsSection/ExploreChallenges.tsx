@@ -65,7 +65,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
         <div className="text-white text-4xl font-bold text-center mb-14">
           <h1>Explore Challenges</h1>
         </div>
-        <div className="flex flex-col sm:flex-row justify-end sm:justify-center sm:gap-4">
+        <div className="flex flex-col md:flex-row justify-end sm:justify-center sm:gap-4">
           <div className="relative flex flex-row items-center bg-white rounded-xl shadow-md w-full md:w-1/2 lg:w-1/2 mb-4 md:mb-0 h-12">
             <div className="flex items-center w-auto pl-4 py-2">
               <Search className="text-gray-400 w-5 h-5 md:w-6 md:h-6" />
@@ -114,6 +114,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
             filters={filters} // Pass filters state
           />
         </div>
+        {/* Filter List */}
         <div className="container mx-auto md:px-12 lg:px-24 xl:px-60">
           <div className="mt-4 flex flex-wrap gap-6 text-sm">
             {filters.categories.map((category) => (
