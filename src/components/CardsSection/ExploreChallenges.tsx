@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import FilterButton from "./FilterButton";
 import { Card, ExploreChallengesProps } from "@/types/types";
 
@@ -8,7 +8,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
   onCardSelect,
   onShowAll,
   onFilterChange,
-  showAllChecked, // Correctly use showAllChecked
+  showAllChecked,
 }) => {
   const [query, setQuery] = useState("");
   const [filteredCards, setFilteredCards] = useState<Card[]>([]);
@@ -20,7 +20,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
     categories: [],
     levels: [],
   });
-  const [showAll, setShowAll] = useState(showAllChecked); // Initialize with showAllChecked
+  const [showAll, setShowAll] = useState(showAllChecked);
 
   useEffect(() => {
     let results = cards;
@@ -49,7 +49,6 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
   }, [query]);
 
   useEffect(() => {
-    // Update the Show All state based on filters
     setShowAll(filters.categories.length === 0 && filters.levels.length === 0);
   }, [filters]);
 
@@ -62,7 +61,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
     setQuery("");
     setFilteredCards([]);
     setIsDropdownOpen(false);
-    setShowAll(false); // Uncheck Show All when a card is selected
+    setShowAll(false);
   };
 
   const handleFilterChange = (newFilters: {
@@ -71,9 +70,6 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
   }) => {
     setFilters(newFilters);
     onFilterChange(newFilters);
-    setShowAll(
-      newFilters.categories.length === 0 && newFilters.levels.length === 0
-    );
   };
 
   const handleShowAll = () => {
@@ -82,7 +78,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
     setFilters({ categories: [], levels: [] });
     setFilteredCards([]);
     setIsDropdownOpen(false);
-    setShowAll(true); // Check Show All when all items are shown
+    setShowAll(true);
   };
 
   const categories = Array.from(new Set(cards.map((card) => card.category)));
@@ -94,7 +90,7 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
         <div className="text-white text-4xl font-bold text-center mb-14">
           <h1>Explore Challenges</h1>
         </div>
-        <div className="flex flex-col sm:flex-row justify-end sm:justify-center sm:gap-4">
+        <div className="flex flex-col md:flex-row justify-end sm:justify-center sm:gap-4">
           {/* Search Bar */}
           <div className="relative flex flex-row items-center bg-white rounded-xl shadow-md w-full md:w-1/2 lg:w-1/2 mb-4 md:mb-0 h-12">
             <div className="flex items-center w-auto pl-4 py-2">
@@ -145,8 +141,48 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
             levels={levels}
             onFilterChange={handleFilterChange}
             onShowAll={handleShowAll}
-            showAllChecked={showAll} // Pass showAll state to FilterButton
+            showAllChecked={showAll}
           />
+        </div>
+
+        {/* Filter List */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {filters.categories.map((category) => (
+            <div
+              key={category}
+              className="bg-white text-gray-800 px-3 py-1 rounded-full flex items-center"
+            >
+              <span className="mr-2">{category}</span>
+              <X
+                className="w-4 h-4 cursor-pointer"
+                onClick={() =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    categories: prev.categories.filter(
+                      (cat) => cat !== category
+                    ),
+                  }))
+                }
+              />
+            </div>
+          ))}
+          {filters.levels.map((level) => (
+            <div
+              key={level}
+              className="bg-white text-gray-800 px-3 py-1 rounded-full flex items-center"
+            >
+              <span className="mr-2">{level}</span>
+              <X
+                className="w-4 h-4 cursor-pointer"
+                onClick={() =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    levels: prev.levels.filter((lvl) => lvl !== level),
+                  }))
+                }
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

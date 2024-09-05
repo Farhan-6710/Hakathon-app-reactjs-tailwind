@@ -1,7 +1,6 @@
-import { Filter } from "lucide-react";
+import { Filter, X } from "lucide-react";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { FilterButtonProps } from "@/types/types";
-
 
 const FilterButton: React.FC<FilterButtonProps> = ({
   categories,
@@ -23,7 +22,6 @@ const FilterButton: React.FC<FilterButtonProps> = ({
       const newCategories = isSelected
         ? prevCategories.filter((cat) => cat !== category)
         : [...prevCategories, category];
-      onFilterChange({ categories: newCategories, levels: selectedLevels });
       return newCategories;
     });
   };
@@ -34,7 +32,6 @@ const FilterButton: React.FC<FilterButtonProps> = ({
       const newLevels = isSelected
         ? prevLevels.filter((lvl) => lvl !== level)
         : [...prevLevels, level];
-      onFilterChange({ categories: selectedCategories, levels: newLevels });
       return newLevels;
     });
   };
@@ -43,9 +40,9 @@ const FilterButton: React.FC<FilterButtonProps> = ({
     if (event.target.checked) {
       setSelectedCategories([]);
       setSelectedLevels([]);
-      onFilterChange({ categories: [], levels: [] }); // Reset filters
+      onFilterChange({ categories: [], levels: [] });
     }
-    onShowAll(); // Call the function to show all items
+    onShowAll();
   };
 
   const handleClickOutside = useCallback((event: MouseEvent) => {
@@ -58,10 +55,10 @@ const FilterButton: React.FC<FilterButtonProps> = ({
     }
   }, []);
 
-  const handleButtonClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    setIsOpen((prev) => !prev);
-  };
+  useEffect(() => {
+    // Update parent component only when selectedCategories or selectedLevels change
+    onFilterChange({ categories: selectedCategories, levels: selectedLevels });
+  }, [selectedCategories, selectedLevels, onFilterChange]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -71,16 +68,15 @@ const FilterButton: React.FC<FilterButtonProps> = ({
   }, [handleClickOutside]);
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center justify-end">
       <button
-        onClick={handleButtonClick}
-        className="flex items-center w-fit bg-white text-gray-700 py-2 px-4 rounded-xl shadow-md hover:bg-gray-100 h-12"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex items-center justify-end w-fit bg-white text-gray-700 py-2 px-4 rounded-xl shadow-md hover:bg-gray-100 h-12"
       >
         <Filter className="mr-2 w-5 h-5 md:w-6 md:h-6 text-primary" />
         <span className="font-semibold">Filter</span>
       </button>
 
-      {/* Overlay */}
       {isOpen && (
         <div
           ref={overlayRef}
@@ -89,7 +85,6 @@ const FilterButton: React.FC<FilterButtonProps> = ({
         />
       )}
 
-      {/* Dropdown */}
       {isOpen && (
         <div
           ref={dropdownRef}
