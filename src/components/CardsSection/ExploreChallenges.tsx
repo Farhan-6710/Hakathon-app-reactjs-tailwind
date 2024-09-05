@@ -114,43 +114,45 @@ const ExploreChallenges: React.FC<ExploreChallengesProps> = ({
             filters={filters} // Pass filters state
           />
         </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {filters.categories.map((category) => (
-            <div
-              key={category}
-              className="bg-white text-gray-800 px-3 py-1 rounded-full flex items-center"
-            >
-              <span className="mr-2">{category}</span>
-              <X
-                className="w-4 h-4 cursor-pointer"
-                onClick={() =>
-                  onFilterChange({
-                    ...filters,
-                    categories: filters.categories.filter(
-                      (cat) => cat !== category
-                    ),
-                  })
-                }
-              />
-            </div>
-          ))}
-          {filters.levels.map((level) => (
-            <div
-              key={level}
-              className="bg-white text-gray-800 px-3 py-1 rounded-full flex items-center"
-            >
-              <span className="mr-2">{level}</span>
-              <X
-                className="w-4 h-4 cursor-pointer"
-                onClick={() =>
-                  onFilterChange({
-                    ...filters,
-                    levels: filters.levels.filter((lvl) => lvl !== level),
-                  })
-                }
-              />
-            </div>
-          ))}
+        <div className="container mx-auto md:px-12 lg:px-24 xl:px-60">
+          <div className="mt-4 flex flex-wrap gap-6 text-sm">
+            {filters.categories.map((category) => (
+              <div
+                key={category}
+                className="bg-gray-400 text-white px-5 py-2 pr-4 rounded-full flex items-center"
+              >
+                <span className="mr-2">{category}</span>
+                <X
+                  className="w-5 h-5 cursor-pointer bg-white text-gray-400 rounded-full p-1"
+                  onClick={() =>
+                    onFilterChange({
+                      ...filters,
+                      categories: filters.categories.filter(
+                        (cat) => cat !== category
+                      ),
+                    })
+                  }
+                />
+              </div>
+            ))}
+            {filters.levels.map((level) => (
+              <div
+                key={level}
+                className="bg-gray-400 text-white px-5 pr-4 py-2 rounded-full flex items-center"
+              >
+                <span className="mr-2">{level}</span>
+                <X
+                  className="w-5 h-5 cursor-pointer bg-white text-gray-400 rounded-full p-1"
+                  onClick={() =>
+                    onFilterChange({
+                      ...filters,
+                      levels: filters.levels.filter((lvl) => lvl !== level),
+                    })
+                  }
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
